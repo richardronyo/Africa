@@ -1,15 +1,16 @@
 import requests
 import pandas as pd
+"""
+This is the backbones of a data pipeline for the World Bank API. It is capable of:
+    1. Searching the API with natural language for a dataset
+    2. Getting the database associated with a search result
+    3. Storing the database as a Pandas DataFrame
+"""
 
 WORLDBANK_URL = "https://data360api.worldbank.org/data360"
 
 
 class WorldBankClient:
-    """
-    This is a class that will interact with teh WorldBank API. It is capable of:
-        1. Searching the API with natural language
-        2. Getting the database associated with a search result, and storing it as a Pandas DataFrame.
-    """
     def __init__(self):
         print("This class interacts with the World Bank API")
         self._results = None
