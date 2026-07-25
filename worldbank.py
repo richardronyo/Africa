@@ -40,7 +40,7 @@ class WorldBankClient:
     def print_results(self):
         count = 0
         for result in self._results:
-            print(count + 1, ".\t", result)
+            print(f'{count + 1}.\t{result['name']}')
             count += 1
     
     def set_data(self, index, timePeriodFrom = 2020, timePeriodTo = 2025):

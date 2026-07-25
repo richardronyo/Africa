@@ -29,8 +29,14 @@ class OECClient:
     def get_cube_names(self):
         return self._cubes
 
+    def print_cubes(self):
+        count = 0
+        for cube_name in self._cubes:
+            print(f'{count + 1}.\t{cube_name}')
+            count += 1
 
+    
 if __name__ == "__main__":
     oec = OECClient()
 
-    print(oec.get_cube_names())
+    oec.print_cubes()
