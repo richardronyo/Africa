@@ -64,11 +64,11 @@ class WorldBankClient:
         
         self._dataset = df
 
-    def get_data(self):
+    def get_dataset(self):
         return self._dataset
 
 if __name__ == "__main__":
     worldbank = WorldBankClient()
     worldbank.search("Nigeria oil", 10)
     worldbank.print_results() 
-    worldbank.get_data(1)
+    worldbank.get_dataset(1)
