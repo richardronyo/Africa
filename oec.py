@@ -35,8 +35,53 @@ class OECClient:
             print(f'{count + 1}.\t{cube_name}')
             count += 1
 
+    def get_cube_schema(self, cube_number):
+        cube_name = self._cubes[cube_number - 1]
+        response = requests.get(f'{OEC_URL}/cubes/{cube_name}')
+
+        if response.status_code != 200:
+            print("Request failed")
+            print("Status: ", response.status_code)
+            print("Response: ", response.text)
+
+            return
+
+        schema = response.json()
+
+        return schema
+
+    def get_cube_data(self, cube_number, drilldowns, measures, include = None, cube_type = 'jsonarrays'):
+        cube_name = self._cubes[cube_number - 1]
+        if include:
+            parameters = {
+                    'cube': cube_name,
+                    'drilldowns': drilldowns,
+                    'measures': measures,
+                    'include': include
+            }
+        else:
+            parameters = {
+                    'cube': cube_name,
+                    'drilldowns': drilldowns,
+                    'measures': measures,
+            }
+
+        response = requests.get(f'{OEC_URL}/data.{cube_type}', params = parameters)
+
+        if response.status_code != 200:
+            print("Request failed")
+            print("Status: ", response.status_code)
+            print("Response: ", response.text)
+
+            return
+
+        data = response.json()
+
+        return data
     
 if __name__ == "__main__":
     oec = OECClient()
 
-    oec.print_cubes()
+    data = oec.get_cube_data(2, "Time,Currency", "Rate")
+
+    print(data)
