@@ -9,6 +9,7 @@ class OECClient:
     def __init__(self):
         print("This class interacts with the OEC API")
         self._cubes = self.set_cube_names()
+        self._dataset = None
 
     def set_cube_names(self):
         response = requests.get(f'{OEC_URL}/cubes')
@@ -50,7 +51,7 @@ class OECClient:
 
         return schema
 
-    def get_cube_data(self, cube_number, drilldowns, measures, include = None, cube_type = 'jsonarrays'):
+    def set_cube_data(self, cube_number, drilldowns, measures, include = None, cube_type = 'jsonrecords'):
         cube_name = self._cubes[cube_number - 1]
         if include:
             parameters = {
@@ -75,13 +76,17 @@ class OECClient:
 
             return
 
-        data = response.json()
+        dataset = response.json()
+        self._dataset = pd.DataFrame(dataset['data'])
+        return    
 
-        return data
-    
+    def get_cube_data(self):
+        return self._dataset
+
+
 if __name__ == "__main__":
     oec = OECClient()
-
-    data = oec.get_cube_data(2, "Time,Currency", "Rate")
-
-    print(data)
+    print(oec.get_cube_names())
+    oec.set_cube_data(2, "Time,Currency", "Rate")
+    data = oec.get_cube_data()
+    print(data.head(20))
