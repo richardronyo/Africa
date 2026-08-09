@@ -2,3 +2,4 @@ venv/*
 data/*
 Literature/*
 .env
+__pycache__/*
