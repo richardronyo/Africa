@@ -97,12 +97,12 @@ class OECClient:
             return
 
         dataset = response.json()
-        print(dataset)
         self._dataset = pd.DataFrame(dataset['data'])
         return    
 
-    def get_cube_data(self):
-        return self._dataset
+    def dataset_to_csv(self, filename):
+        self._dataset.to_csv(f'data/{filename}.csv', index = False)
+        return
 
 def print_dic(dictionary):
     for key, value in dictionary.items():
