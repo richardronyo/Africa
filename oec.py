@@ -30,6 +30,18 @@ class OECClient:
     def get_cube_names(self):
         return self._cubes
 
+    def get_cube_columns(self, cube_number):
+        cube_name = self._cubes[cube_number]
+        response = requests.get(f'{OEC_URL}/cubes/{cube_name}')
+
+        if response.status_code != 200:
+            print('Request failed')
+            print('Status: ', response.status_code)
+            print('Response: ', response.text)
+            return
+
+        return response.json()
+
     def print_cubes(self):
         count = 0
         for cube_name in self._cubes:
@@ -71,7 +83,7 @@ class OECClient:
 
         return members
         
-    def set_cube_data(self, cube_number, drilldowns, measures, include = None, cube_type = 'jsonrecords'):
+    def set_cube_data(self, cube_number, drilldowns, measures, include = None, properties = None, cube_type = 'jsonrecords'):
         cube_name = self._cubes[cube_number]
         if include:
             parameters = {
@@ -87,6 +99,8 @@ class OECClient:
                     'measures': measures,
             }
 
+        if properties:
+            parameters['properties'] = properties
         response = requests.get(f'{OEC_URL}/data.{cube_type}', params = parameters)
 
         if response.status_code != 200:
@@ -96,13 +110,16 @@ class OECClient:
 
             return
 
-        dataset = response.json()
-        self._dataset = pd.DataFrame(dataset['data'])
+        self._dataset = response.json()['data']
         return    
 
-    def dataset_to_csv(self, filename):
-        self._dataset.to_csv(f'data/{filename}.csv', index = False)
-        return
+    def dataset_to_df(self):
+        if self._dataset:
+            df = pd.DataFrame(self._dataset)
+            return df
+        else:
+            print("No dataset available")
+            return None
 
 def print_dic(dictionary):
     for key, value in dictionary.items():
@@ -127,7 +144,7 @@ def main():
     running = True
     while running:
         print("---------------------------------------------------------------------")
-        option = input("Select an option\n\t1. View Available Datasets\n\t2. View Schema\n\t3. Get Dataset\n\t4. Get Members\n\t5. Save Dataset\n\t6. Exit\nEnter your choice: ") 
+        option = input("Select an option\n\t1. View Available Datasets\n\t2. View Schema\n\t3. Get Dataset\n\t4. Get Members\n\t5. Save Dataset\n\t6. View Dataset Columns\n\t7. Exit\nEnter your choice: ") 
         if int(option) == 1:
             print("Available Datasets")
             oec.print_cubes()
@@ -161,8 +178,13 @@ def main():
             dataset = oec.get_cube_data()
             dataset.to_csv(f'data/{filename}.csv')
 
-
         if int(option) == 6:
+            cube_number = input('Enter the cube number: ')
+            cube_number = int(cube_number) - 1
+            columns = oec.get_cube_columns(cube_number)
+            print_dic(columns)
+
+        if int(option) == 7:
             print("Thank You!")
             running = False
 
