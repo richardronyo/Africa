@@ -58,7 +58,7 @@ class WorldBankClient:
             print("Request failed")
             print("Status: ", response.status_code)
             print("Response: ", response.text)
-
+        print(response.json())
         data = response.json()['value']
         df = pd.DataFrame(data)
         
@@ -71,4 +71,5 @@ if __name__ == "__main__":
     worldbank = WorldBankClient()
     worldbank.search("Nigeria oil", 10)
     worldbank.print_results() 
-    worldbank.get_dataset(1)
+    worldbank.set_data(8)
+    print(worldbank.get_dataset())
