@@ -58,7 +58,6 @@ class WorldBankClient:
             print("Request failed")
             print("Status: ", response.status_code)
             print("Response: ", response.text)
-        print(response.json())
         data = response.json()['value']
         df = pd.DataFrame(data)
         
