@@ -84,7 +84,7 @@ class OECClient:
         return members
         
     def set_cube_data(self, cube_number, drilldowns, measures, include = None, properties = None, cube_type = 'jsonrecords'):
-        cube_name = self._cubes[cube_number]
+        cube_name = self._cubes[cube_number - 1]
         if include:
             parameters = {
                     'cube': cube_name,
