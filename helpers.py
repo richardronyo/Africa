@@ -1,10 +1,11 @@
-import pandas as pd
-
 from oec import OECClient
 
 def continental_trade(oec_client, exporter_continent, importer_continent, year):
     """
     This function gets a CSV that includes trade data based on exporter continent and importer continent. It utilizes the  
+
+    Trades are taken from the trade_i_baci_22 data cube
+    
     """
     COLUMNS = 'Exporter Continent Official,Exporter Country Official,Importer Continent Official,Importer Country Official,Section,HS2,HS4,HS6,Year' 
     MEASURES = 'Trade+Value,Quantity'
@@ -39,12 +40,30 @@ def continental_trade(oec_client, exporter_continent, importer_continent, year):
     df.to_csv(f'data/{exporter_continent.lower()}/{exporter_continent.lower()}_to_{importer_continent.lower()}_{year}.csv') 
 
     return
+def country_trade(oec_client, country_name):
+    """
+    This function gets all of the exports from a specific country from 2019 - 2022 
 
+    Trades are taken from the trade_i_baci_22 data cube
+    """
+
+    COLUMNS = "Exporter Country Official,Importer Country Official,Section,HS2,HS4,HS6,Year"
+    MEASURES = "Trade+Value,Quantity"
+
+    cube_name = oec_client.get_cube_names()[61]
+    print("Getting data from:", cube_name)
+
+    #Mapping the natural languag Country Name to Country Key
+    country_raw = oec_client.get_cube_members(62, 'Exporter Country Official')['members']
+    COUNTRY_MAP = {country['caption']: country['key'] for country in country_raw}
+    country_key = COUNTRY_MAP[country_name]
+
+    #Getting all the exports from the requested country from 2019 - 2022
+    print(f'Getting all exports from {country_name}')
+
+    oec_client.set_cube_data(62, COLUMNS, MEASURES, f'Exporter Country Official:{country_key}', properties = 'Exporter Country trade blocs')
+    df = oec_client.dataset_to_df()
+
+    return df
 if __name__ == "__main__":
-    oec_client = OECClient()
-    continental_trade(oec_client, 'Africa', 'Africa', 2022)
-    continental_trade(oec_client, 'Africa', 'Asia', 2022)
-    continental_trade(oec_client, 'Africa', 'Europe', 2022)
-    continental_trade(oec_client, 'Africa', 'North America', 2022)
-    continental_trade(oec_client, 'Africa', 'South America', 2022)
-    continental_trade(oec_client, 'Africa', 'Oceania', 2022)
+    print("This file contains all of the helper functions")
